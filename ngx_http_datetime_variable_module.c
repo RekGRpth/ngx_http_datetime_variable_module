@@ -23,6 +23,18 @@ static ngx_int_t ngx_http_variable_minute(ngx_http_request_t *r,
     ngx_http_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_http_variable_second(ngx_http_request_t *r,
     ngx_http_variable_value_t *v, uintptr_t data);
+static ngx_int_t ngx_http_variable_local_year(ngx_http_request_t *r,
+    ngx_http_variable_value_t *v, uintptr_t data);
+static ngx_int_t ngx_http_variable_local_month(ngx_http_request_t *r,
+    ngx_http_variable_value_t *v, uintptr_t data);
+static ngx_int_t ngx_http_variable_local_day(ngx_http_request_t *r,
+    ngx_http_variable_value_t *v, uintptr_t data);
+static ngx_int_t ngx_http_variable_local_hour(ngx_http_request_t *r,
+    ngx_http_variable_value_t *v, uintptr_t data);
+static ngx_int_t ngx_http_variable_local_minute(ngx_http_request_t *r,
+    ngx_http_variable_value_t *v, uintptr_t data);
+static ngx_int_t ngx_http_variable_local_second(ngx_http_request_t *r,
+    ngx_http_variable_value_t *v, uintptr_t data);
 
 
 static ngx_http_datetime_variable_t  ngx_http_datetime_variables[] = {
@@ -54,6 +66,36 @@ static ngx_http_datetime_variable_t  ngx_http_datetime_variables[] = {
     {
         ngx_string("datetime_second"),
         ngx_http_variable_second,
+        NGX_HTTP_VAR_NOCACHEABLE,
+    },
+        {
+        ngx_string("datetime_lyear"),
+        ngx_http_variable_local_year,
+        NGX_HTTP_VAR_NOCACHEABLE,
+    },
+    {
+        ngx_string("datetime_lmonth"),
+        ngx_http_variable_local_month,
+        NGX_HTTP_VAR_NOCACHEABLE,
+    },
+    {
+        ngx_string("datetime_lday"),
+        ngx_http_variable_local_day,
+        NGX_HTTP_VAR_NOCACHEABLE,
+    },
+    {
+        ngx_string("datetime_lhour"),
+        ngx_http_variable_local_hour,
+        NGX_HTTP_VAR_NOCACHEABLE,
+    },
+    {
+        ngx_string("datetime_lminute"),
+        ngx_http_variable_local_minute,
+        NGX_HTTP_VAR_NOCACHEABLE,
+    },
+    {
+        ngx_string("datetime_lsecond"),
+        ngx_http_variable_local_second,
         NGX_HTTP_VAR_NOCACHEABLE,
     }
 };
@@ -111,7 +153,7 @@ ngx_http_datetime_fmt(ngx_http_request_t *r,
 }
 
 
-void
+static void
 ngx_http_datetime_gmtime(time_t t, struct tm *tp)
 {
     int   yday;
@@ -201,6 +243,91 @@ ngx_http_datetime_gmtime(time_t t, struct tm *tp)
     tp->tm_mon = (int) mon;
     tp->tm_year = (int) year;
     tp->tm_wday = (int) wday;
+}
+
+
+static void
+ngx_http_datetime_localtime(time_t t, struct tm *tp)
+{
+    ngx_localtime(t, tp);
+}
+
+
+static ngx_int_t
+ngx_http_variable_local_year(ngx_http_request_t *r,
+    ngx_http_variable_value_t *v, uintptr_t data)
+{
+    struct tm  tm;
+    time_t     elapsed = ngx_cached_time->sec;
+
+    ngx_http_datetime_localtime(elapsed, &tm);
+
+    return ngx_http_datetime_fmt(r, v, tm.tm_year, NGX_INT32_LEN);
+}
+
+
+static ngx_int_t
+ngx_http_variable_local_month(ngx_http_request_t *r,
+    ngx_http_variable_value_t *v, uintptr_t data)
+{
+    struct tm  tm;
+    time_t     elapsed = ngx_cached_time->sec;
+
+    ngx_http_datetime_localtime(elapsed, &tm);
+
+    return ngx_http_datetime_fmt(r, v, tm.tm_mon, NGX_INT32_LEN);
+}
+
+
+static ngx_int_t
+ngx_http_variable_local_day(ngx_http_request_t *r,
+    ngx_http_variable_value_t *v, uintptr_t data)
+{
+    struct tm  tm;
+    time_t     elapsed = ngx_cached_time->sec;
+
+    ngx_http_datetime_localtime(elapsed, &tm);
+
+    return ngx_http_datetime_fmt(r, v, tm.tm_mday, NGX_INT32_LEN);
+}
+
+
+static ngx_int_t
+ngx_http_variable_local_hour(ngx_http_request_t *r,
+    ngx_http_variable_value_t *v, uintptr_t data)
+{
+    struct tm  tm;
+    time_t     elapsed = ngx_cached_time->sec;
+
+    ngx_http_datetime_localtime(elapsed, &tm);
+
+    return ngx_http_datetime_fmt(r, v, tm.tm_hour, NGX_INT32_LEN);
+}
+
+
+static ngx_int_t
+ngx_http_variable_local_minute(ngx_http_request_t *r,
+    ngx_http_variable_value_t *v, uintptr_t data)
+{
+    struct tm  tm;
+    time_t     elapsed = ngx_cached_time->sec;
+
+    ngx_http_datetime_localtime(elapsed, &tm);
+
+    return ngx_http_datetime_fmt(r, v, tm.tm_min, NGX_INT32_LEN);
+}
+
+
+static ngx_int_t
+ngx_http_variable_local_second(ngx_http_request_t *r,
+    ngx_http_variable_value_t *v, uintptr_t data)
+{
+    struct tm  tm;
+    time_t     elapsed = ngx_cached_time->sec;
+
+    ngx_http_datetime_localtime(elapsed, &tm);
+
+    return ngx_http_datetime_fmt(r, v, tm.tm_sec, NGX_INT32_LEN);
 }
 
 
