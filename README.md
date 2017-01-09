@@ -23,4 +23,10 @@ In nginx internals, there are no such variable like %YY, So i adding the variabl
 4. $datetime_hour: [0-23]
 5. $datetime_minute: [0-59]
 6. $datetime_second: [0-59]
+7. $datetime_lyear: localtime for datetime_year
+8. $datetime_lmonth: localtime for datetime_month
+9. $datetime_lday: localtime for datetime_day
+10. $datime_lhour: localtime for datetime_hour
+11. $datetime_lminute: localtime for datetime_minute
+12. $datetime_lsecond: localtime for datetime_second
 
